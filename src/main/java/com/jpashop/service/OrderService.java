@@ -27,7 +27,7 @@ public class OrderService {
         // 배송정보 생성
         Delivery delivery = new Delivery(member.getAddress());
 
-        // 배송정보 생성
+        // 주문상품 생성
         OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
 
         // 주문 생성

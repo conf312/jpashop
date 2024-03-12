@@ -3,15 +3,15 @@ package com.jpashop.web;
 import com.jpashop.domain.item.Book;
 import com.jpashop.domain.item.Item;
 import com.jpashop.service.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 public class ItemController {
-    @Autowired
-    private ItemService itemService;
+    private final ItemService itemService;
 
     @PostMapping("/item")
     public ResponseEntity<Long> create(@RequestBody Book item) {

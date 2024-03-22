@@ -73,7 +73,7 @@ List<Order> resultList =
 
 ## 어노테이션
 ### @Transactional(readonly = true)
-데이터를 변경하지 않는 트랜잭션에서 플러시를 생략하여 약간의 성능 향상을 얻을 수 있다.
+데이터를 변경하지 않는 트랜잭션에서 플러시를 생략하여 약간의 성능 향상을 얻을 수 있다.
 
 ### @DiscriminatorColumn 
 Item 클래스의 하위 클래스를 식별하는 데 사용될 컬럼을 지정하고, `@DiscriminatorValue`는 각 하위 클래스가 해당 컬럼에 저장될 값을 명시합니다.
@@ -93,3 +93,20 @@ Item 클래스의 하위 클래스를 식별하는 데 사용될 컬럼을 지�
 
 ### @Transactional(readOnlny = true)
 스프링 프레임워크가 하이버네이트 세션의 플러시 모드를 MANUAL로 설정한다. 이렇게 하면 강제로 플러시를 호출하지 않는 한 플러시가 일어나지 않는다. 따라서 트랜잭션을 커밋해도 영속성 컨텍스트를 플러시 하지않는다. 영속성 컨텍스트를 플러시 하지 않으니 등록, 수정, 삭제는 당연히 동작하지 않는다. 하지만 플러시할 때 일어나는 스냅샷 비교와 같은 무거운 로직들을 수행하지 않으므로 성능이 향상된다. 트랜잭션 과정은 이루어지되 단지 영속성 컨텍스트를 플러시하지 않을 뿐이다.
+
+
+## @PersistenceContext 란?
+- EntityManager를 빈으로 주입할 때 사용하는 어노테이션
+- 스프링에서는 영속성 관리를 위해 EntityManager가 존재
+- 스프링 컨테이너가 시작될 때 EntityManager를 만들어서 빈으로 등록
+- 이 때 스프링이 만들어둔 EntityManager를 주입받을 때 사용
+- @PersistenceContext로 지정된 프로퍼티에 아래 두 가지 중 한 가지로 EntityManager를 주입
+- EntityManagerFactory에서 새로운 EntityManager를 생성하거나 Transaction에 의해 기존에 생성된 EntityManager를 반환
+
+### @PersistenceContext를 사용해야 하는 이유
+#### EntityManager를 사용할 때 주의해야 할 점
+여러 쓰레드가 동시에 접근하면 동시성 문제가 발생하여 쓰레드 간에는 EntityManager를 공유해서는 안됩니다. 하지만 스프링은 싱글톤 기반으로 동작하기에 빈은 모든 쓰레드가 공유됩니다.
+
+**그러나 @PersistenceContext으로 EntityManager를 주입받아도 동시성 문제가 발생하지 않는 이유는**
+- 스프링 컨테이너가 초기화되면서 @PersistenceContext으로 주입받은 EntityManager를 Proxy로 감쌉니다.
+- 그리고 EntityManager 호출 시 마다 Proxy를 통해 EntityManager를 생성하여 Thread-Safe를 보장합니다.
